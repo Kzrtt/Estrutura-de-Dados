@@ -69,7 +69,7 @@ void inserir(LISTA** primeiro, LISTA** ultimo, int* quantidade) {
             break;
         case 2:
             printf("\nInserindo no meio...");
-            auxPos = *quantidade % 2 == 0 ? (*quantidade / 2) : (*quantidade / 2) - 1;
+            auxPos = *quantidade % 2 == 0 ? (*quantidade / 2) : (*quantidade / 2) + 1;
             break;
         default:
             printf("\nInserindo no fim...");
