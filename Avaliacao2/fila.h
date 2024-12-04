@@ -199,6 +199,8 @@ void enviarMissao(FILA** primeiro, FILA** ultimo, int* quantidade) {
         *ultimo = NULL;
         *primeiro = NULL;
         *quantidade -= 1;
+
+        printf("\nMissão Enviada...\n");
         return;
     }
 
