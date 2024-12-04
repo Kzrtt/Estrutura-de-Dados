@@ -121,7 +121,7 @@ void inserir(FILA** primeiro, FILA** ultimo, int* quantidade) {
         }
         
         if (anterior == NULL) {
-            //* Insere no início, pois é de maior prioridade
+            //* Insere no início, pois está vázio a fila
             novoNo->proxNo = *primeiro;
             *primeiro = novoNo;
         } else {
