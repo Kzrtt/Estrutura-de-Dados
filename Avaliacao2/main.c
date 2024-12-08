@@ -4,7 +4,6 @@ void main() {
     FILA* primeiro = NULL;
     FILA* ultimo = NULL; 
     int escolha = 0;
-    int quantidade = 0;
 
     while (1)
     {
@@ -14,11 +13,12 @@ void main() {
         printf("[2] Enviar Missão\n");
         printf("[3] Mostrar Missões\n");
         printf("[4] Adiantar Missão\n");
-        printf("[5] Sair\n");
+        printf("[5] Organizar Missões\n");
+        printf("[6] Sair\n");
         printf("Sua Escolha: ");
         scanf("%d", &escolha);
 
-        if(escolha == 5) {
+        if(escolha == 6) {
             printf("\nSaindo...\n");
             break;
         }   
@@ -26,10 +26,10 @@ void main() {
         switch (escolha)
         {
             case 1:
-                inserir(&primeiro, &ultimo, &quantidade);
+                inserir(&primeiro, &ultimo);
                 break;
             case 2: 
-                enviarMissao(&primeiro, &ultimo, &quantidade);
+                enviarMissao(&primeiro, &ultimo);
                 break;
             case 3:
                 mostrar(&primeiro);
@@ -37,13 +37,15 @@ void main() {
             case 4: {
                 int pos = 0;
 
-                printf("\n%d Missões Cadastradas\n", quantidade);
-                printf("Qual Missão deseja adiantar: ");
+                printf("\nQual Missão deseja adiantar: ");
                 scanf("%d", &pos);
 
-                adiantarMissao(&primeiro, &ultimo, (pos - 1), &quantidade);
+                adiantarMissao(&primeiro, &ultimo, pos);
                 break;
             }
+            case 5:
+                reorganizar(&primeiro, &ultimo);
+                break;
         default:
             printf("\nOpção Inválida...\n");
             break;

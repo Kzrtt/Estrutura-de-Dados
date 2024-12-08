@@ -47,7 +47,7 @@ void lbt() {
     while((c = getchar()) != '\n' && c != EOF) {}
 }
 
-void inserir(FILA** primeiro, FILA** ultimo, int* quantidade) {
+void inserir(FILA** primeiro, FILA** ultimo) {
     //? Alocando a memória
     FILA* novoNo = (FILA*) malloc(sizeof(FILA));
 
@@ -61,81 +61,49 @@ void inserir(FILA** primeiro, FILA** ultimo, int* quantidade) {
     printf("\nQual o nome da missão (máx: 50): ");
     scanf("%[^\n]", &novoNo->nome);
 
-    printf("\nQual a carga da missão (toneladas): ");
+    printf("Qual a carga da missão (toneladas): ");
     scanf("%d", &novoNo->carga);
 
-    printf("\nQual a distância (milhões de km): ");
+    printf("Qual a distância (milhões de km): ");
     scanf("%d", &novoNo->distancia);
     novoNo->proxNo = NULL;
 
     //? Cadastro da Data
     int dia, mes, ano;
     struct tm data = {0};
-    printf("\nDigite a data (dd/mm/aaaa): ");
+    printf("Digite a data (dd/mm/aaaa): ");
     scanf("%d/%d/%d", &data.tm_mday, &data.tm_mon, &data.tm_year);
     data.tm_mon -= 1;
     data.tm_year -= 1900;
     novoNo->data = data;
 
-    //? Cadastro da Importancia
-    //* Pega data atual
-    time_t agora = time(NULL);
-    struct tm *dataAtual = localtime(&agora);
-
-    //* Calcula a diferença de tempo
-    time_t dataMissao = mktime(&data);
-    time_t dataAtualTime = mktime(dataAtual);
-
-    if (dataMissao == -1 || dataAtualTime == -1) {
-        printf("\nErro ao calcular as datas.\n");
-        return;
+    int importancia = 4;
+    printf("\nImportância: (1 => Crítico, 2 => Alta, 3 => Médio, 4 => Baixo)\n");
+    printf("Digite a importância: ");
+    scanf("%d", &importancia);
+    
+    switch (importancia)
+    {
+        case 1:
+            novoNo->importancia = CRITICO;
+            break;
+        case 2: 
+            novoNo->importancia = ALTO;
+            break;
+        case 3:
+            novoNo->importancia = MEDIO;
+            break;
+        default:
+            novoNo->importancia = BAIXO;
+            break;
     }
 
-    //* Diferença em segundos convertida para dias
-    double diferencaDias = difftime(dataMissao, dataAtualTime) / (60 * 60 * 24);
-
-    if (diferencaDias <= 7) {
-        novoNo->importancia = CRITICO;
-    } else if (diferencaDias <= 14) {
-        novoNo->importancia = ALTO;
-    } else if (diferencaDias <= 21) {
-        novoNo->importancia = MEDIO;
-    } else {
-        novoNo->importancia = BAIXO;
-    }
-
-    //? Lógica da Fila
     if(*primeiro == NULL) {
         *primeiro = novoNo;
         *ultimo = novoNo;
-        *quantidade += 1;
-        return;
     } else {
-        //* O temp é a primeira prioridade menor, logo o anterior ainda é mais prioritário que o que vamos inserir
-        FILA* temp = *primeiro;
-        FILA* anterior = NULL;
-        while ((temp != NULL) && temp->importancia <= novoNo->importancia)
-        {
-            anterior = temp;
-            temp = temp->proxNo;
-        }
-        
-        if (anterior == NULL) {
-            //* Insere no início, pois está vázio a fila
-            novoNo->proxNo = *primeiro;
-            *primeiro = novoNo;
-        } else {
-            //* Insere no meio ou no final
-            novoNo->proxNo = temp;
-            anterior->proxNo = novoNo;
-
-            //? // Atualiza o último nó, se necessário
-            if (temp == NULL) {
-                *ultimo = anterior->proxNo;
-            }
-        }
-
-        *quantidade += 1;
+        (*ultimo)->proxNo = novoNo;
+        *ultimo = novoNo;
     }
 
     printf("\nValor adicionado com sucesso!\n");
@@ -171,6 +139,51 @@ void mostrar(FILA** primeiro) {
     printf("\n");
 }
 
+void reorganizar(FILA** primeiro, FILA** ultimo) {
+    if(*primeiro == NULL) {
+        printf("A Fila está vázia...\n");
+        return;
+    }
+
+    FILA* i = *primeiro;
+    FILA* j;
+    
+    printf("\n");
+    while (i != NULL)
+    {
+        j = i->proxNo;
+
+        while (j != NULL)
+        {
+            if(
+                i->importancia > j->importancia || 
+                (i->importancia == j->importancia && difftime(mktime(&i->data), mktime(&j->data)) > 0)
+            ) {
+                FILA aux = *i;
+                printf("Trocando %s e %s\n", i->nome, j->nome);
+
+                strcpy(i->nome, j->nome);
+                i->carga = j->carga;
+                i->distancia = j->distancia;
+                i->data = j->data;
+                i->importancia = j->importancia;
+
+                strcpy(j->nome, aux.nome);
+                j->carga = aux.carga;
+                j->distancia = aux.distancia;
+                j->data = aux.data;
+                j->importancia = aux.importancia;
+            }
+
+            j = j->proxNo;
+        }
+        
+        i = i->proxNo;
+    }
+
+    printf("\nA Fila foi ordenada...\n");
+}
+
 FILA* buscarMissao(FILA** primeiro, int indice) {
     //? Se a lista está vázia retorna NULL
     if(*primeiro == NULL || indice < 0) {
@@ -189,7 +202,7 @@ FILA* buscarMissao(FILA** primeiro, int indice) {
     return NULL;
 }
 
-void enviarMissao(FILA** primeiro, FILA** ultimo, int* quantidade) {
+void enviarMissao(FILA** primeiro, FILA** ultimo) {
     if(*primeiro == NULL) {
         printf("A Fila de missões está vázia...\n");
         return;
@@ -198,7 +211,6 @@ void enviarMissao(FILA** primeiro, FILA** ultimo, int* quantidade) {
     if(*ultimo == *primeiro) {
         *ultimo = NULL;
         *primeiro = NULL;
-        *quantidade -= 1;
 
         printf("\nMissão Enviada...\n");
         return;
@@ -206,13 +218,12 @@ void enviarMissao(FILA** primeiro, FILA** ultimo, int* quantidade) {
 
     FILA* aux = *primeiro;
     *primeiro = aux->proxNo;
-    *quantidade -= 1;
     free(aux);
 
     printf("\nMissão Enviada...\n");
 }
 
-void adiantarMissao(FILA** primeiro, FILA** ultimo, int auxPos, int* quantidade) {
+void adiantarMissao(FILA** primeiro, FILA** ultimo, int auxPos) {
     //? Buscando valor na lista
     FILA* temp = buscarMissao(primeiro, auxPos);
     if(temp == NULL) {
@@ -220,14 +231,19 @@ void adiantarMissao(FILA** primeiro, FILA** ultimo, int auxPos, int* quantidade)
         return;
     }
 
-    FILA* auxRem = temp->proxNo;
-    temp->proxNo = auxRem->proxNo;
-    *quantidade -= 1;
-    
-    auxRem = NULL;
-    free(auxRem);
-    temp = NULL;
-    free(temp);
+    FILA aux = **primeiro;
+
+    strcpy((*primeiro)->nome, temp->nome);
+    (*primeiro)->carga = temp->carga;
+    (*primeiro)->distancia = temp->distancia;
+    (*primeiro)->data = temp->data;
+    (*primeiro)->importancia = temp->importancia;
+
+    strcpy(temp->nome, aux.nome);
+    temp->carga = aux.carga;
+    temp->distancia = aux.distancia;
+    temp->data = aux.data;
+    temp->importancia = aux.importancia;
 
     printf("\nMissão Adiantada!\n");
 }
