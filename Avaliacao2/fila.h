@@ -21,6 +21,16 @@ struct fila {
     FILA* proxNo;
 };
 
+const char* importanciaToString(Importancia imp) {
+    switch (imp) {
+        case CRITICO: return "CRÍTICO";
+        case ALTO: return "ALTO";
+        case MEDIO: return "MÉDIO";
+        case BAIXO: return "BAIXO";
+        default: return "DESCONHECIDO";
+    }
+}
+
 void imprimirImportancia(Importancia importancia) {
     printf("   Importância: ");
     switch (importancia) {
@@ -160,7 +170,17 @@ void reorganizar(FILA** primeiro, FILA** ultimo) {
                 (i->importancia == j->importancia && difftime(mktime(&i->data), mktime(&j->data)) > 0)
             ) {
                 FILA aux = *i;
-                printf("Trocando %s e %s\n", i->nome, j->nome);
+                char data_i[20], data_j[20];
+
+                // Formata as datas para strings legíveis (Ex: "DD/MM/YYYY")
+                strftime(data_i, sizeof(data_i), "%d/%m/%Y", &i->data);
+                strftime(data_j, sizeof(data_j), "%d/%m/%Y", &j->data);
+
+                // Imprime os detalhes no printf
+                printf("Trocando %s (Importância: %s, Data: %s) e %s (Importância: %s, Data: %s)\n",
+                    i->nome, importanciaToString(i->importancia), data_i,
+                    j->nome, importanciaToString(j->importancia), data_j
+                );
 
                 strcpy(i->nome, j->nome);
                 i->carga = j->carga;
