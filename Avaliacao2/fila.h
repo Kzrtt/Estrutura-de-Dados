@@ -202,6 +202,11 @@ void reorganizar(FILA** primeiro, FILA** ultimo) {
     }
 
     printf("\nA Fila foi ordenada...\n");
+
+    i = NULL;
+    j = NULL;
+    free(i);
+    free(j);
 }
 
 FILA* buscarMissao(FILA** primeiro, int indice) {
