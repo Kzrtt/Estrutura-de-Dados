@@ -61,5 +61,5 @@ void main() {
 
         system("pause");
 
-    } while (escolha != 6);
+    } while (escolha != 5);
 }

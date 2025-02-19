@@ -153,14 +153,15 @@ void mostrar(LISTA** primeiro) {
     }
 
     LISTA* temp = *primeiro;
-    printf("\nProdutos: \n");
+    int count = 1;
     while(temp != NULL) {
-        printf("\nId: %d\n", temp->id);
-        printf("Nome: %s\n", temp->nome);
-        printf("Valor: R$%.2f\n", temp->valor);
-        printf("Quantidade %d\n", temp->quantidade);
-        printf("--------------------------");
+        printf("\nRegistro #%d: \n", count);
+        printf("   Id: %d\n", temp->id);
+        printf("   Nome: %s\n", temp->nome);
+        printf("   Valor: R$%.2f\n", temp->valor);
+        printf("   Quantidade %d\n", temp->quantidade);
         temp = temp->proxNo;
+        count += 1;
     }
     printf("\n");
 }
